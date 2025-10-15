@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-set(CMAKE_VER_FULL "${CMAKE_VERSION}")
+string(REGEX REPLACE "-[A-Za-z0-9_]+$" "" CMAKE_VER_FULL "${CMAKE_VERSION}")
 file(READ "${CMAKE_CURRENT_LIST_DIR}/cmake_import_std_uuids.json" _json_str)
 string(REGEX MATCH "\"${CMAKE_VER_FULL}\"[ \t]*:[ \t]*\"([0-9a-fA-F\\-]+)\"" _match "${_json_str}")
 
@@ -13,14 +13,12 @@ else()
 endif()
 
 project(test_cpp23_import_std LANGUAGES CXX)
-if (WIN32)
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        message(FATAL_ERROR
-                "Detected the use of MinGW GCC compiler on Windows.\n"
-                "MinGW GCC has serious compatibility issues with C++23 modules (import std).\n"
-                "Please switch to Clang (such as llvm-mingw) or MSVC for compilation."
-        )
-    endif()
+if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(FATAL_ERROR
+            "Detected the use of MinGW GCC compiler on Windows.\n"
+            "MinGW GCC has serious compatibility issues with C++23 modules (import std).\n"
+            "Please switch to Clang (such as llvm-mingw) or MSVC for compilation."
+    )
 endif()
 
 set(CMAKE_CXX_MODULE_STD 1)
