@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 4.0)
 
 set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
+
+project(C++23-Module-Example LANGUAGES CXX)
+
 set(CMAKE_CXX_MODULE_STD ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -10,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MSYS2_Clang "Compile using Clang in MSYS2" OFF)
 
-project(C++23-Module-Example LANGUAGES CXX)
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
 
 add_executable(C++23-Module-Example src/main.cpp)
 
