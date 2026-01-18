@@ -1,19 +1,36 @@
 import std;
+import vulkan;
 
-template<typename T>
-concept Addable = requires(const T& lhs, const T& rhs) {
-    { lhs + rhs } -> std::same_as<T>;
-};
+int main() {
+    const vk::raii::Context ctx;
 
-auto add(Addable auto const& lhs, Addable auto const& rhs) {
-    return lhs + rhs;
-}
+    constexpr vk::ApplicationInfo app_info{
+        .pApplicationName = "My App",
+        .applicationVersion = 1,
+        .pEngineName = "My Engine",
+        .engineVersion = 1,
+        .apiVersion = vk::makeApiVersion(1, 4, 0, 0)
+    };
+    
+    const vk::InstanceCreateInfo create_info{
+        .pApplicationInfo = &app_info
+    };
+    
+    auto [InstanceRes, instance] = ctx.createInstance(create_info);
+    if (InstanceRes != vk::Result::eSuccess) {
+        std::println("Failed to create Vulkan instance: {}", vk::to_string(InstanceRes));
+        return -1;
+    }
 
-int main()
-{
-    std::string s = "Hello C++23 import std!\n";
-    std::string_view s_view = s;
-    std::print("{}", s_view);
+    std::println("Physical Device: ");
 
-    std::println("1 + 1 = {}", add(1, 1));
+    auto [PhysicalDevicesRes, physicalDevices] = instance.enumeratePhysicalDevices();
+    if (PhysicalDevicesRes != vk::Result::eSuccess) {
+        std::println("Failed to enumerate physical devices: {}", vk::to_string(PhysicalDevicesRes));
+        return -1;
+    }
+
+    for (const auto& physicalDevice : physicalDevices) {
+        std::println("\t{}", std::string_view{ physicalDevice.getProperties().deviceName });
+    }
 }
